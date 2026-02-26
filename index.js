@@ -27,7 +27,9 @@ app.use((err, req, res, next) => {
     });
 });
 
-mongoose.connect('mongodb+srv://kmediario13_db_user:alena@cluster0.xf879y1.mongodb.net/?appName=Cluster0');
+mongoose.connect('mongodb+srv://kmediario13_db_user:alena@cluster0.xf879y1.mongodb.net/my_database?retryWrites=true&w=majority&appName=Cluster0')
+    .then(() => console.log('✅ Terhubung ke MongoDB Atlas!'))
+    .catch((err) => console.error('❌ Gagal konek:', err));
 
 app.listen(3000, () => {
     console.log('Server jalan di http://localhost:3000');
