@@ -27,16 +27,10 @@ app.use((err, req, res, next) => {
     });
 });
 
-mongoose
-  .connect(
-    "mongodb://bogy:A350-800xwb@" +
-      "ac-qnyazq1-shard-00-00.a0kd7ga.mongodb.net:27017," +
-      "ac-qnyazq1-shard-00-01.a0kd7ga.mongodb.net:27017," +
-      "ac-qnyazq1-shard-00-02.a0kd7ga.mongodb.net:27017/" +
-      "?tls=true&authSource=admin&replicaSet=atlas-r3p3bo-shard-0&retryWrites=true&w=majority&appName=Cluster0"
-  )
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
+mongoose.connect('mongodb+srv://kmediario13_db_user:alena@cluster0.xf879y1.mongodb.net/my_database?retryWrites=true&w=majority&appName=Cluster0')
+    .then(() => console.log('✅ Terhubung ke MongoDB Atlas!'))
+    .catch((err) => console.error('❌ Gagal konek:', err));
+
 app.listen(3000, () => {
     console.log('Server jalan di http://localhost:3000');
 });
