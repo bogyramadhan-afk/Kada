@@ -1,7 +1,6 @@
 import express from 'express';
 import noteRouter from './routes/notes.js';
 import mongoose from 'mongoose';
-import { Post } from './models/index.js'; 
 
 const app = express();
 
