@@ -26,8 +26,16 @@ app.use((err, req, res, next) => {
     });
 });
 
-mongoose.connect('mongodb+srv://bogy:A350-800xwb@cluster0.a0kd7ga.mongodb.net/?appName=Cluster0')
-    .then(() => console.log('✅ Terhubung ke MongoDB Atlas!'))
+// mongoose.connect('mongodb+srv://bogy:A350-800xwb@cluster0.a0kd7ga.mongodb.net/?appName=Cluster0')
+const uri =
+  "mongodb://bogy:A350-800xwb@" +
+  "ac-qnyazq1-shard-00-00.a0kd7ga.mongodb.net:27017," +
+  "ac-qnyazq1-shard-00-01.a0kd7ga.mongodb.net:27017," +
+  "ac-qnyazq1-shard-00-02.a0kd7ga.mongodb.net:27017" +
+  "/?tls=true&authSource=admin&replicaSet=atlas-r3p3bo-shard-0&retryWrites=true&w=majority&appName=Cluster0";
+
+mongoose.connect(uri)
+.then(() => console.log('✅ Terhubung ke MongoDB Atlas!'))
     .catch((err) => console.error('❌ Gagal konek:', err));
 
 app.listen(3000, () => {
