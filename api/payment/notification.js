@@ -2,12 +2,6 @@ import midtransClient from 'midtrans-client';
 
 const isProduction = String(process.env.MIDTRANS_IS_PRODUCTION || 'false') === 'true';
 
-const coreApi = new midtransClient.CoreApi({
-  isProduction,
-  serverKey: process.env.MIDTRANS_SERVER_KEY,
-  clientKey: process.env.MIDTRANS_CLIENT_KEY,
-});
-
 function mapPaymentState(transactionStatus, fraudStatus) {
   if (
     transactionStatus === 'settlement' ||
@@ -41,6 +35,21 @@ export default async function handler(req, res) {
   }
 
   try {
+    const serverKey = String(process.env.MIDTRANS_SERVER_KEY || '').trim();
+    const clientKey = String(process.env.MIDTRANS_CLIENT_KEY || '').trim();
+
+    if (!serverKey) {
+      return res.status(500).json({
+        message: 'MIDTRANS_SERVER_KEY belum diset di Vercel Environment Variables.',
+      });
+    }
+
+    const coreApi = new midtransClient.CoreApi({
+      isProduction,
+      serverKey,
+      clientKey,
+    });
+
     const notification = req.body || {};
 
     if (!notification.order_id && !notification.transaction_status && !notification.signature_key) {
