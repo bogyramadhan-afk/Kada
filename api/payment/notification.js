@@ -1,6 +1,9 @@
-import midtransClient from 'midtrans-client';
+import crypto from 'node:crypto';
 
 const isProduction = String(process.env.MIDTRANS_IS_PRODUCTION || 'false') === 'true';
+const midtransBaseUrl = isProduction
+  ? 'https://api.midtrans.com'
+  : 'https://api.sandbox.midtrans.com';
 
 function mapPaymentState(transactionStatus, fraudStatus) {
   if (
@@ -36,31 +39,59 @@ export default async function handler(req, res) {
 
   try {
     const serverKey = String(process.env.MIDTRANS_SERVER_KEY || '').trim();
-    const clientKey = String(process.env.MIDTRANS_CLIENT_KEY || '').trim();
 
     if (!serverKey) {
       return res.status(500).json({
         message: 'MIDTRANS_SERVER_KEY belum diset di Vercel Environment Variables.',
       });
     }
-
-    const coreApi = new midtransClient.CoreApi({
-      isProduction,
-      serverKey,
-      clientKey,
-    });
-
-    const notification = req.body || {};
+    const notification = typeof req.body === 'string'
+      ? JSON.parse(req.body || '{}')
+      : (req.body || {});
 
     if (!notification.order_id && !notification.transaction_status && !notification.signature_key) {
       return res.status(200).json({ message: 'Notification endpoint is reachable.' });
     }
 
-    const statusResponse = await coreApi.transaction.notification(notification);
-    const orderId = statusResponse.order_id || notification.order_id || null;
-    const transactionStatus = statusResponse.transaction_status || null;
-    const fraudStatus = statusResponse.fraud_status || null;
-    const paymentType = statusResponse.payment_type || null;
+    const orderId = notification.order_id || null;
+    const statusCode = String(notification.status_code || '');
+    const grossAmount = String(notification.gross_amount || '');
+    const signatureKey = String(notification.signature_key || '');
+
+    if (orderId && statusCode && grossAmount && signatureKey) {
+      const expectedSignature = crypto
+        .createHash('sha512')
+        .update(`${orderId}${statusCode}${grossAmount}${serverKey}`)
+        .digest('hex');
+
+      if (expectedSignature !== signatureKey) {
+        return res.status(401).json({ message: 'Signature Midtrans tidak valid.' });
+      }
+    }
+
+    let statusResponse = notification;
+    if (orderId) {
+      const authHeader = `Basic ${Buffer.from(`${serverKey}:`).toString('base64')}`;
+      const midtransResponse = await fetch(
+        `${midtransBaseUrl}/v2/${encodeURIComponent(orderId)}/status`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            Authorization: authHeader,
+          },
+        }
+      );
+
+      const statusJson = await midtransResponse.json();
+      if (midtransResponse.ok) {
+        statusResponse = statusJson;
+      }
+    }
+
+    const transactionStatus = statusResponse.transaction_status || notification.transaction_status || null;
+    const fraudStatus = statusResponse.fraud_status || notification.fraud_status || null;
+    const paymentType = statusResponse.payment_type || notification.payment_type || null;
     const paymentState = mapPaymentState(transactionStatus, fraudStatus);
 
     console.log('[Midtrans Notification][Vercel]', {
