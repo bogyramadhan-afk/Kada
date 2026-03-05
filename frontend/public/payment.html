@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Page</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container payment-page">
+      <h1>Payment Page</h1>
+      <div class="nav-links">
+        <a class="nav-button" href="/">Message Board</a>
+        <a class="nav-button" href="/auth.html">Login Page</a>
+      </div>
+
+      <section class="panel payment-panel">
+        <form id="payment-form">
+          <label for="amount">Amount to Pay</label>
+          <input id="amount" name="amount" type="number" min="1" placeholder="20000" required />
+
+          <label for="name">Full Name</label>
+          <input id="name" name="name" type="text" placeholder="Enter your full name" required />
+
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" placeholder="nama@email.com" required />
+
+          <label for="order-id-input">Order ID (optional for status check)</label>
+          <input id="order-id-input" name="order_id" type="text" placeholder="ORDER-1234567890" />
+
+          <button id="pay-button" type="submit">Pay Now</button>
+          <button id="check-button" type="button">Check Payment Status</button>
+        </form>
+      </section>
+
+      <section class="panel payment-status-panel">
+        <h2>Payment Status</h2>
+        <p id="payment-status">Payment system not configured. Please contact administrator.</p>
+        <p id="order-id-text"></p>
+      </section>
+    </main>
+
+    <script src="/config.js"></script>
+    <script src="/payment.js"></script>
+  </body>
+</html>

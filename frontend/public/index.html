@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kada Message Board</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Message Board</h1>
+      <div class="nav-links">
+        <a class="nav-button" href="/auth.html">Halaman Login</a>
+        <a class="nav-button" href="/payment.html">Halaman Midtrans</a>
+      </div>
+      <p><a href="/auth.html">Buka halaman register / login</a></p>
+      <p id="user-info"></p>
+
+      <section class="panel">
+        <label for="proxy-select">Lihat server</label>
+        <select id="proxy-select"></select>
+      </section>
+
+      <section class="panel">
+        <form id="message-form">
+          <label for="text">Tulis pesan</label>
+          <textarea id="text" name="text" required></textarea>
+          <button type="submit">Post Message</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <p id="status-text">Memuat pesan...</p>
+        <ul id="message-list" class="list"></ul>
+      </section>
+    </main>
+    <script src="/config.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
